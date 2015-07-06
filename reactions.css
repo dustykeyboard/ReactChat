@@ -1,0 +1,94 @@
+body {
+	margin: 0;
+	padding: 0;
+	border: 0;
+}
+.reactionsPanel {
+	border: 1px solid silver;
+	border-radius: .5em;
+	margin: 0 0 .5em;
+	box-shadow: .2em .2em .5em rgba(0, 0, 0, .5);
+}
+body > .reactionsPanel {
+	border: 0;
+	border-radius: 0;
+	margin: 0;
+	box-shadow: none;
+}
+.reactionsPanel h1 {
+	padding: .4em;
+	margin: 0;
+	font-size: 1.25em;
+	background: AliceBlue;
+	color: grey;
+	border-radius: .4em .4em 0 0;
+	font-weight: normal;
+}
+.reactionsPanel ol {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.reactionsPanel li {
+	list-style: none;
+	padding: .5em;
+	margin: 0;
+}
+.reactionsPanel li:nth-child(2n) {
+	background: AliceBlue;
+}
+.reactionsPanel li .name {
+}
+.reactionsPanel li .when {
+	font-style: italic;
+	float: right;
+	cursor: pointer;
+}
+.reactionsPanel li .text {
+}
+.reactionsPanel form {
+	border-top: 1px dashed silver;
+	margin: .5em 0;
+	padding: 0 .5em;
+}
+.reactionsPanel input,
+.reactionsPanel textarea {
+	display: block;
+	font-size: 1em;
+	box-sizing: border-box;
+	width: 100%;
+	margin: .5em 0 0;
+	padding: .5em;
+	border: 1px solid silver;
+}
+.reactionsPanel input[type=submit] {
+	padding: .5em;
+	cursor: pointer;
+}
+.reactionsPanel input[type=submit]:hover {
+	background: #ff8800;
+}
+.reactionsPanel form textarea {
+	min-height: 5em;
+}
+@media(min-width:50em){
+	.reactionsPanel input,
+	.reactionsPanel textarea {
+		display: inline-block;
+		vertical-align: top;
+		width: 20%;
+		margin: .5em .5% 0;
+	}
+	.reactionsPanel textarea {
+		width: 55%;
+	}
+}
+a {
+	color: blue;
+}
+a:visited {
+	color: rebeccapurple;
+}
+a:hover {
+	color: #ff8800;
+}
