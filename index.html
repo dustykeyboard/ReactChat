@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Hello React</title>
+    <link type="text/css" rel="stylesheet" href="reactions.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.3/react.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.3/JSXTransformer.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.2/marked.min.js"></script>
+  </head>
+  <body>
+    <div id="content"></div>
+    <script type="text/jsx">
+var ReactionBox = React.createClass({
+	fuzzyTime: function() {
+		var t = ((new Date().getTime() - new Date(this.props.data.when).getTime()) / 1000);
+		if (t < 60) return Math.floor(t)+' seconds';
+		if (t < 120) return 'a minute';
+		if (t < 3600) return Math.floor(t/60)+' minutes';
+		if (t < 7200) return 'an hour';
+		if (t < 86400) return Math.floor(t/3600)+' hours';
+		if (t < 172800) return 'a day';
+		if (t < 604800) return Math.floor(t/86400)+' days';
+		if (t < 1209600) return 'a week';
+		if (t < 2628000) return Math.floor(t/604800)+' weeks';
+		if (t < 5256000) return 'a month';
+		if (t < 31536000) return Math.floor(t/2628000)+' months';
+		if (t < 63072000) return 'a year';
+		return Math.floor(t/31536000)+' years';
+	},
+	render: function() {
+		var rawMarkup = marked(this.props.data.text.toString(), {sanitize: true});
+		return (
+			<li>
+				<div className="when">{this.fuzzyTime()} ago</div>
+				<div className="name">{this.props.data.name}</div>
+				<div className="text rawMarkup" dangerouslySetInnerHTML={{__html: rawMarkup}} />
+			</li>
+		);
+	}
+});
+
+var ReactionsList = React.createClass({
+	render: function() {
+		return (
+			<ol>
+				{this.props.reactions.map(function(reaction) {
+					return <ReactionBox key={reaction.id} data={reaction} />;
+				})}
+			</ol>
+		);
+	}
+});
+
+var ReactionForm = React.createClass({
+	handleSubmit: function(e) {
+		e.preventDefault();
+		var name = React.findDOMNode(this.refs.name).value.trim();
+		var text = React.findDOMNode(this.refs.text).value.trim();
+		if (!text || !name) {
+			return;
+		}
+
+		this.props.onFormSubmit({name: name, text: text});
+		React.findDOMNode(this.refs.text).value = '';
+		return;
+	},
+	render: function() {
+		return (
+			<form onSubmit={this.handleSubmit}>
+				<input type="text" ref="name" name="name" placeholder="Your name" />
+				<textarea ref="text" name="text" placeholder="Your reaction..."></textarea>
+				<input type="submit" ref="post" value="React" />
+			</form>
+		);
+	}
+});
+
+var ReactionsPanel = React.createClass({
+	loadReactionsFromServer: function() {
+		$.ajax({
+			url: this.props.url,
+			dataType: 'json',
+			cache: false,
+			success: function(data) {
+				this.setState({reactions: data});
+			}.bind(this),
+			error: function(xhr, status, err) {
+				console.error(this.props.url, status, err.toString());
+			}.bind(this)
+		});
+	},
+	submitReaction: function(reaction) {
+		$.ajax({
+			url: this.props.url,
+			dataType: 'json',
+			type: 'POST',
+			data: reaction,
+			success: function(data) {
+				this.setState({reactions: data});
+			}.bind(this),
+			error: function(xhr, status, err) {
+				console.error(this.props.url, status, err.toString());
+			}.bind(this)
+		});
+	},
+	getInitialState: function() {
+		return {reactions: []};
+	},
+	componentDidMount: function() {
+		this.loadReactionsFromServer();
+		setInterval(this.loadReactionsFromServer, this.props.pollInterval);
+	},
+	render: function() {
+		return (
+			<div className="reactionsPanel">
+				<h1>Reactions</h1>
+				<ReactionsList reactions={this.state.reactions} />
+				<ReactionForm onFormSubmit={this.submitReaction} />
+			</div>
+		);
+	}
+});
+
+React.render(<ReactionsPanel url="reactions.json.php" pollInterval={2000} />, document.body);
+    </script>
+  </body>
+</html>
